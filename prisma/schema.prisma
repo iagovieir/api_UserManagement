@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model TypeOffice{
+  id Int @id @default(autoincrement())
+  name String @unique
+  nomenclatureOffice NomenclatureOffice[]
+}
+
+model NomenclatureOffice{
+  id Int @id @default(autoincrement())
+  name String @unique
+  TypeOffice TypeOffice? @relation(fields: [typeOffice_ID], references: [id], onDelete: Cascade)
+  typeOffice_ID Int?
+  users Users[]
+}
+model Phone{
+  id Int @id @default(autoincrement())
+  phone String @unique
+  user_Id String
+  user_phone Users @relation(fields: [user_Id], references: [CPF], onDelete: Cascade)
+}
+
+model Status{
+  id Int @id @default(autoincrement())
+  name String @unique
+  users Users[]
+}
+
+model Users{
+  CPF String @id
+  name String
+  personal_email String? @unique
+  corporate_email String? @unique
+  matriculation String? @unique
+  NomenclatureOffice NomenclatureOffice? @relation(fields: [nomenclatureOffice_ID], references: [id] )
+  nomenclatureOffice_ID Int?
+  leaderId   String?
+  leader     Users? @relation("UserToLeader",fields: [leaderId], references: [CPF])
+  statusID Int?
+  status Status? @relation(fields: [statusID], references: [id])
+  subordinates Users[] @relation("UserToLeader")
+  phone Phone[]
+}
