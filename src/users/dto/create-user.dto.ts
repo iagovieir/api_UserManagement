@@ -9,16 +9,4 @@ export class CreateUserDto {
     @IsString()
     @IsNotEmpty()
     name: string;   
-
-    @IsString()
-    @IsNotEmpty()
-    personal_email: string;
-
-    @IsString()
-    @IsNotEmpty()
-    corporate_email: string;
-
-    @IsString()
-    @IsNotEmpty()
-    matriculation: string;
 }

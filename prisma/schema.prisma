@@ -33,18 +33,45 @@ model Status{
   users Users[]
 }
 
+model Sector{
+  id Int @id @default(autoincrement())
+  name String @unique
+  users Users[]
+}
+
+model Secretary{
+  id Int @id @default(autoincrement())
+  name String @unique
+  users Users[]
+}
+
+model Sex{
+  id Int @id @default(autoincrement())
+  name String
+  users Users[]
+}
+
 model Users{
   CPF String @id
   name String
   personal_email String? @unique
   corporate_email String? @unique
   matriculation String? @unique
-  NomenclatureOffice NomenclatureOffice? @relation(fields: [nomenclatureOffice_ID], references: [id] )
+  date_of_birth DateTime? @db.Date
+  sex_ID Int?
+  sex Sex? @relation(fields: [sex_ID], references: [id])
+  secretary_ID Int?
+  secretary Secretary? @relation(fields: [secretary_ID], references: [id])
+  sector_ID Int?
+  sector Sector? @relation(fields: [sector_ID], references: [id])
   nomenclatureOffice_ID Int?
+  NomenclatureOffice NomenclatureOffice? @relation(fields: [nomenclatureOffice_ID], references: [id] )
   leaderId   String?
   leader     Users? @relation("UserToLeader",fields: [leaderId], references: [CPF])
   statusID Int?
   status Status? @relation(fields: [statusID], references: [id])
   subordinates Users[] @relation("UserToLeader")
   phone Phone[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime? @updatedAt
 }

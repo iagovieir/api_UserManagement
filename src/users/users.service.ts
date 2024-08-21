@@ -24,6 +24,7 @@ export class UsersService {
         corporate_email: true,
         personal_email: true,
         matriculation: true,
+        date_of_birth:true,
         status: {
           select: {
             name: true
