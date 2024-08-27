@@ -25,6 +25,14 @@ export class UsersService {
         personal_email: true,
         matriculation: true,
         date_of_birth:true,
+        createdAt: true,
+        sector: true,
+        updatedAt: true,
+        sex: {
+          select: {
+            name: true
+          }
+        },
         status: {
           select: {
             name: true
@@ -33,7 +41,7 @@ export class UsersService {
         subordinates: {
           select: {
             name: true,
-            CPF: true,
+            CPF: true
           }
         },
         leader:{
@@ -58,7 +66,7 @@ export class UsersService {
           }
         }
       }
-    })
+    });
   }
 
   findOne(CPF: string) {
@@ -72,10 +80,24 @@ export class UsersService {
         corporate_email: true,
         personal_email: true,
         matriculation: true,
+        date_of_birth:true,
+        createdAt: true,
+        sector: true,
+        updatedAt: true,
+        sex: {
+          select: {
+            name: true
+          }
+        },
+        status: {
+          select: {
+            name: true
+          }
+        },
         subordinates: {
           select: {
             name: true,
-            CPF: true,
+            CPF: true
           }
         },
         leader:{
