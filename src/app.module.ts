@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
-import { NomenclaturesOfficeModule } from './nomenclature-office/nomenclatures-office.module';
-import { TypeJobModule } from './type-office/type-office.module';
-import { PhoneModule } from './phone/phone.module';
-import { SecretaryModule } from './secretary/secretary.module';
-import { SectorModule } from './sector/sector.module';
-import { SexModule } from './sex/sex.module';
-import { StatusModule } from './status/status.module';
+import { UsersModule } from './routes/users/users.module';
+import { NomenclaturesOfficeModule } from './routes/nomenclature-office/nomenclatures-office.module';
+import { TypeJobModule } from './routes/type-office/type-office.module';
+import { PhoneModule } from './routes/phone/phone.module';
+import { SecretaryModule } from './routes/secretary/secretary.module';
+import { SectorModule } from './routes/sector/sector.module';
+import { SexModule } from './routes/sex/sex.module';
+import { StatusModule } from './routes/status/status.module';
 
 @Module({
   
