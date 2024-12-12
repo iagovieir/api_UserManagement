@@ -16,7 +16,15 @@ export class SexService {
   }
 
   findAll() {
-    return this.prismaService.sex.findMany();
+    return this.prismaService.sex.findMany({
+      include:{
+        users: {
+           select:{
+            name: true
+           }
+        }
+      }
+    });
   }
 
   async findOne(id: number) {

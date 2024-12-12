@@ -6,6 +6,10 @@ import { NotFoundErrorFilter } from './filter-errors/not-found-error/not-found-e
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.enableCors({
+    origin: '*'
+  })
+
   app.useGlobalPipes(
     new ValidationPipe({
       errorHttpStatusCode: 422

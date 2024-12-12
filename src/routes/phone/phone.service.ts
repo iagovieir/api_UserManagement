@@ -16,13 +16,28 @@ export class PhoneService {
   }
 
   findAll() {
-    return this.prismaService.phone.findMany();
+    return this.prismaService.phone.findMany({
+      include: {
+        user_phone: {
+          select:{
+            name: true
+          }
+        }
+      }
+    });
   }
 
  async findOne(id: number) {
   try{
     return await this.prismaService.phone.findUniqueOrThrow({
-      where: {id}
+      where: {id},
+      include: {
+        user_phone: {
+          select:{
+            name: true
+          }
+        }
+      }
     });
   }catch(error){
     if(error.code === 'P2025'){
