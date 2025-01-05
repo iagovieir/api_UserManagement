@@ -58,14 +58,14 @@ model Users{
   corporate_email String? @unique
   matriculation String? @unique
   date_of_birth DateTime? @db.Date
-  sex_ID Int?
-  sex Sex? @relation(fields: [sex_ID], references: [id])
-  secretary_ID Int?
-  secretary Secretary? @relation(fields: [secretary_ID], references: [id])
-  sector_ID Int?
-  sector Sector? @relation(fields: [sector_ID], references: [id])
-  nomenclatureOffice_ID Int?
-  NomenclatureOffice NomenclatureOffice? @relation(fields: [nomenclatureOffice_ID], references: [id] )
+  sexID Int?
+  sex Sex? @relation(fields: [sexID], references: [id])
+  secretaryID Int?
+  secretary Secretary? @relation(fields: [secretaryID], references: [id])
+  sectorID Int?
+  sector Sector? @relation(fields: [sectorID], references: [id])
+  nomenclatureOfficeID Int?
+  NomenclatureOffice NomenclatureOffice? @relation(fields: [nomenclatureOfficeID], references: [id] )
   leaderId   String?
   leader     Users? @relation("UserToLeader",fields: [leaderId], references: [CPF])
   statusID Int?

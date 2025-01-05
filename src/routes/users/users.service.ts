@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/databases/prisma/prisma.service';
@@ -28,8 +28,12 @@ export class UsersService {
         matriculation: true,
         date_of_birth:true,
         createdAt: true,
-        sector: true,
         updatedAt: true,
+        sector: {
+          select: {
+            name: true
+          }
+        },
         sex: {
           select: {
             name: true
@@ -135,6 +139,27 @@ export class UsersService {
   };
 
   async update(CPF: string, updateUserDto: UpdateUserDto) {
+
+    const errors = []
+
+    if (updateUserDto.secretaryID) {
+      const secretaryExists = await this.prismaService.secretary.findUnique({
+        where: { id: updateUserDto.secretaryID },
+      });
+        if (!secretaryExists) errors.push({ field: 'secretaryID', message: 'secretaryID informado não existe.' }); 
+    }
+
+    if (updateUserDto.statusID) {
+      const statusExists = await this.prismaService.status.findUnique({
+        where: { id: updateUserDto.statusID },
+      });
+      if (!statusExists) errors.push({ field: 'statusID', message: 'statusID informado não existe.' }); 
+    }
+
+    if (errors.length > 0) {
+      throw new HttpException({ errors }, HttpStatus.BAD_REQUEST);
+    }
+
     try{
       return this.prismaService.users.update({
       where: {CPF},
