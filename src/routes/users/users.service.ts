@@ -11,8 +11,16 @@ export class UsersService {
 
   };
 
-  create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto) {
 
+    if (createUserDto.CPF) {
+      const usersExists = await this.prismaService.users.findUnique({
+        where: { CPF: createUserDto.CPF },
+      });
+        if (usersExists){
+          throw new HttpException({ field: 'CPF', message: 'CPF informado já cadatrado.'}, HttpStatus.BAD_REQUEST);
+        } 
+    }
       return this.prismaService.users.create({
         data: createUserDto
       });
@@ -131,9 +139,7 @@ export class UsersService {
         }
       });
     }catch(error){
-      if(error.code === 'P2025'){
         throw new NotFoundError(`Usário com o CPF ${CPF} não encontratdo`);
-      };
     };
     
   };
@@ -146,14 +152,14 @@ export class UsersService {
       const secretaryExists = await this.prismaService.secretary.findUnique({
         where: { id: updateUserDto.secretaryID },
       });
-        if (!secretaryExists) errors.push({ field: 'secretaryID', message: 'secretaryID informado não existe.' }); 
+        if (!secretaryExists) errors.push({ field: 'secretaryID', message: 'secretaryID informado não existe.'}); 
     }
 
     if (updateUserDto.statusID) {
       const statusExists = await this.prismaService.status.findUnique({
         where: { id: updateUserDto.statusID },
       });
-      if (!statusExists) errors.push({ field: 'statusID', message: 'statusID informado não existe.' }); 
+      if (!statusExists) errors.push({ field: 'statusID', message: 'statusID informado não existe.'});
     }
 
     if (errors.length > 0) {
@@ -161,14 +167,12 @@ export class UsersService {
     }
 
     try{
-      return this.prismaService.users.update({
-      where: {CPF},
-      data: updateUserDto
+      return await this.prismaService.users.update({
+        where: {CPF},
+        data: updateUserDto
     });
     }catch(error){
-      if(error.code === 'P2025'){
         throw new NotFoundError(`Usário com o CPF ${CPF} não encontratdo`);
-      };
     };
     
   };
@@ -179,9 +183,8 @@ export class UsersService {
       where:{CPF}
     });
     }catch(error){
-      if(error.code === 'P2025'){
         throw new NotFoundError(`Usário com o CPF ${CPF} não encontratdo`);
-      };
+
     };
     
   };
