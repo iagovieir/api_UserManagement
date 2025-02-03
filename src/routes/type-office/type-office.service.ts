@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateTypeOfficeDto } from './dto/create-type-office.dto';
 import { UpdateTypeOfficeDto } from './dto/update-type-office.dto';
 import { PrismaService } from 'src/databases/prisma/prisma.service';
@@ -9,7 +9,17 @@ export class TypeOfficeService {
 
   constructor(private prismaService: PrismaService){}
 
-  create(CreateTypeOfficeDto: CreateTypeOfficeDto) {
+  async create(CreateTypeOfficeDto: CreateTypeOfficeDto) {
+
+    if (CreateTypeOfficeDto.name) {
+          const typeOfficeExists = await this.prismaService.typeOffice.findUnique({
+            where: { name: CreateTypeOfficeDto.name },
+          });
+            if (typeOfficeExists){
+              throw new HttpException({ field: 'name', message: 'Nome informado já cadatrado.'}, HttpStatus.BAD_REQUEST);
+            } 
+        }
+
     return this.prismaService.typeOffice.create({
       data: CreateTypeOfficeDto
     }) ;
@@ -40,9 +50,9 @@ export class TypeOfficeService {
     
   }
 
-  update(id: number, updateTypeOfficeDto: UpdateTypeOfficeDto) {
+  async update(id: number, updateTypeOfficeDto: UpdateTypeOfficeDto) {
     try{
-      return this.prismaService.typeOffice.update({
+      return await this.prismaService.typeOffice.update({
         where: {id},
         data: updateTypeOfficeDto
       });
@@ -53,9 +63,9 @@ export class TypeOfficeService {
     };
   }
 
-  remove(id: number) {
+  async remove(id: number) {
     try{
-      return this.prismaService.typeOffice.delete({
+      return await this.prismaService.typeOffice.delete({
         where: {id}
       });
     }catch(error){
