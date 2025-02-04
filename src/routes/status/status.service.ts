@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateStatusDto } from './dto/create-status.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
 import { PrismaService } from 'src/databases/prisma/prisma.service';
@@ -8,8 +8,21 @@ import { NotFoundError } from 'src/error';
 export class StatusService {
 
   constructor( private prismaService: PrismaService){}
-  create(createStatusDto: CreateStatusDto) {
-    return 'This action adds a new status';
+
+  async create(createStatusDto: CreateStatusDto) {
+    
+    if (createStatusDto.name) {
+      const statusExists = await this.prismaService.status.findUnique({
+        where: { name: createStatusDto.name },
+      });
+      if (statusExists){
+        throw new HttpException({ field: 'name', message: 'Nome informado já cadatrado.'}, HttpStatus.BAD_REQUEST);
+      }
+    }
+    
+    return await this.prismaService.status.create({
+      data: createStatusDto
+    })
   }
 
   findAll() {

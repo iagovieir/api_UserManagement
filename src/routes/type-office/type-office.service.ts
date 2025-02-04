@@ -12,17 +12,17 @@ export class TypeOfficeService {
   async create(CreateTypeOfficeDto: CreateTypeOfficeDto) {
 
     if (CreateTypeOfficeDto.name) {
-          const typeOfficeExists = await this.prismaService.typeOffice.findUnique({
-            where: { name: CreateTypeOfficeDto.name },
-          });
-            if (typeOfficeExists){
-              throw new HttpException({ field: 'name', message: 'Nome informado já cadatrado.'}, HttpStatus.BAD_REQUEST);
-            } 
-        }
+      const typeOfficeExists = await this.prismaService.typeOffice.findUnique({
+        where: { name: CreateTypeOfficeDto.name },
+      });
+      if (typeOfficeExists){
+        throw new HttpException({ field: 'name', message: 'Nome informado já cadatrado.'}, HttpStatus.BAD_REQUEST);
+      } 
+    }
 
-    return this.prismaService.typeOffice.create({
+    return await this.prismaService.typeOffice.create({
       data: CreateTypeOfficeDto
-    }) ;
+    });
   }
 
   findAll() {

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateSexDto } from './dto/create-sex.dto';
 import { UpdateSexDto } from './dto/update-sex.dto';
 import { PrismaService } from 'src/databases/prisma/prisma.service';
@@ -9,8 +9,17 @@ export class SexService {
   
   constructor(private prismaService: PrismaService){}
   
-  create(createSexDto: CreateSexDto) {
-    return this.prismaService.sex.create({
+  async create(createSexDto: CreateSexDto) {
+
+    if (createSexDto.name) {
+      const statusExists = await this.prismaService.sex.findUnique({
+        where: { name: createSexDto.name },
+      });
+      if (statusExists){
+        throw new HttpException({ field: 'name', message: 'Nome informado já cadatrado.'}, HttpStatus.BAD_REQUEST);
+      }
+    }
+    return await this.prismaService.sex.create({
       data: createSexDto
     });
   }
