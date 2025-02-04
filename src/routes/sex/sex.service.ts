@@ -12,10 +12,10 @@ export class SexService {
   async create(createSexDto: CreateSexDto) {
 
     if (createSexDto.name) {
-      const statusExists = await this.prismaService.sex.findUnique({
+      const sexExists = await this.prismaService.sex.findUnique({
         where: { name: createSexDto.name },
       });
-      if (statusExists){
+      if (sexExists){
         throw new HttpException({ field: 'name', message: 'Nome informado já cadatrado.'}, HttpStatus.BAD_REQUEST);
       }
     }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateSectorDto } from './dto/create-sector.dto';
 import { UpdateSectorDto } from './dto/update-sector.dto';
 import { PrismaService } from 'src/databases/prisma/prisma.service';
@@ -9,8 +9,18 @@ export class SectorService {
 
   constructor(private prismaService: PrismaService){}
 
-  create(createSectorDto: CreateSectorDto) {
-    return this.prismaService.sector.create({
+  async create(createSectorDto: CreateSectorDto) {
+
+    if (createSectorDto.name) {
+          const sectorExists = await this.prismaService.sector.findUnique({
+            where: { name: createSectorDto.name },
+          });
+          if (sectorExists){
+            throw new HttpException({ field: 'name', message: 'Nome informado já cadatrado.'}, HttpStatus.BAD_REQUEST);
+          }
+        }
+
+    return await this.prismaService.sector.create({
       data: createSectorDto
     });
   }
