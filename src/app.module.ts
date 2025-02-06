@@ -9,13 +9,14 @@ import { SecretaryModule } from './routes/secretary/secretary.module';
 import { SectorModule } from './routes/sector/sector.module';
 import { SexModule } from './routes/sex/sex.module';
 import { StatusModule } from './routes/status/status.module';
+import { RoleModule } from './routes/role/role.module';
 
 @Module({
   
   imports: [UsersModule, NomenclaturesOfficeModule, 
             TypeJobModule, PhoneModule, 
             SecretaryModule, SectorModule, 
-            SexModule, StatusModule],
+            SexModule, StatusModule, RoleModule],
 
   controllers: [AppController],
   providers: [AppService],

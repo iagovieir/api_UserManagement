@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateSecretaryDto } from './dto/create-secretary.dto';
 import { UpdateSecretaryDto } from './dto/update-secretary.dto';
 import { PrismaService } from 'src/databases/prisma/prisma.service';
@@ -12,8 +12,19 @@ export class SecretaryService {
   }
   
   
-  create(createSecretaryDto: CreateSecretaryDto) {
-    return this.prismaService.secretary.create({
+  async create(createSecretaryDto: CreateSecretaryDto) {
+
+    if (createSecretaryDto.name) {
+      const nomenclatureOfficeExists = await this.prismaService.secretary.findUnique({
+        where: { name: createSecretaryDto.name },
+      });
+      if (nomenclatureOfficeExists){
+        throw new HttpException({ field: 'name', message: 'Nome informado já cadatrado.'}, HttpStatus.BAD_REQUEST);
+      }
+    }
+    
+    
+    return await this.prismaService.secretary.create({
       data: createSecretaryDto
     });
   }

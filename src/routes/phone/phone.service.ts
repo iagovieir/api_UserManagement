@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreatePhoneDto } from './dto/create-phone.dto';
 import { UpdatePhoneDto } from './dto/update-phone.dto';
 import { PrismaService } from 'src/databases/prisma/prisma.service';
@@ -9,7 +9,25 @@ export class PhoneService {
 
   constructor(private prismaService: PrismaService){}
 
-  create(createPhoneDto: CreatePhoneDto) {
+  async create(createPhoneDto: CreatePhoneDto) {
+
+    if (createPhoneDto.phone) {
+      const phoneExists = await this.prismaService.phone.findUnique({
+        where: { phone: createPhoneDto.phone },
+      });
+        if (phoneExists){
+          throw new HttpException({ field: 'phone', message: 'Número de celular informado já cadatrado.'}, HttpStatus.BAD_REQUEST);
+        }
+    }
+    if(createPhoneDto.user_Id){
+      const usersExists = await this.prismaService.users.findUnique({
+        where: { CPF: createPhoneDto.user_Id },
+      });
+      if(!usersExists){
+        throw new HttpException({ field: 'user_Id', message: 'CPF informado não existe.'}, HttpStatus.BAD_REQUEST);
+      }
+    }
+
     return this.prismaService.phone.create({
       data: createPhoneDto
     });

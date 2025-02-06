@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateNomenclatureOfficeDto } from './dto/create-nomenclature-office.dto';
 import { UpdateNomenclatureOfficeDto } from './dto/update-nomenclature-office.dto';
 import { PrismaService } from 'src/databases/prisma/prisma.service';
@@ -10,9 +10,28 @@ export class NomenclaturesOfficeService {
 
     constructor(private prismaService: PrismaService){}
 
-  create(CreateNomenclatureOfficeDto: CreateNomenclatureOfficeDto) {
+  async create(createNomenclatureOfficeDto: CreateNomenclatureOfficeDto) {
+
+    if (createNomenclatureOfficeDto.name) {
+      const secretaryExists = await this.prismaService.nomenclatureOffice.findUnique({
+        where: { name: createNomenclatureOfficeDto.name },
+      });
+      if (secretaryExists){
+        throw new HttpException({ field: 'name', message: 'Nome informado já cadatrado.'}, HttpStatus.BAD_REQUEST);
+      }
+    }
+
+    if(createNomenclatureOfficeDto.typeOffice_ID){
+      const typeOffice = await this.prismaService.typeOffice.findUnique({
+        where: { id: createNomenclatureOfficeDto.typeOffice_ID }
+      });
+      if(!typeOffice){
+        throw new HttpException({ field: 'typeOffice_ID', message: 'typeOffice_ID informado não existe.'}, HttpStatus.BAD_REQUEST);
+      }
+    }
+
     return this.prismaService.nomenclatureOffice.create({
-      data: CreateNomenclatureOfficeDto
+      data: createNomenclatureOfficeDto
     });
   }
 

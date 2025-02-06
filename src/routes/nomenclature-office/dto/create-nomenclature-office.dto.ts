@@ -1,12 +1,13 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsInt, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class CreateNomenclatureOfficeDto {
 
-    @IsString()
-    @IsNotEmpty()
+    @IsString({ message: `o valor não é válido para o valor esperado em name`})
+    @IsNotEmpty({ message: `o valor não pode ser vázio`})
     name: string;
 
-    //TypeOffice: nenhum ou apenas um id do tipo de trabalho
+    @IsOptional()
+    @IsInt({ message: `o valor não é válido para o valor esperado em typeOffice_ID`})
+    typeOffice_ID?: number;
 
-    //users: nenhum ou varios id's dos usuários
 }

@@ -37,6 +37,11 @@ export class UsersService {
         date_of_birth:true,
         createdAt: true,
         updatedAt: true,
+        role:{
+          select:{
+            typeRole: true,
+          }
+        },
         sector: {
           select: {
             name: true
@@ -97,8 +102,17 @@ export class UsersService {
           matriculation: true,
           date_of_birth:true,
           createdAt: true,
-          sector: true,
           updatedAt: true,
+          role:{
+            select:{
+              typeRole: true,
+            }
+          },
+          sector: {
+            select: {
+              name: true
+            }
+          },
           sex: {
             select: {
               name: true
@@ -160,6 +174,12 @@ export class UsersService {
         where: { id: updateUserDto.statusID },
       });
       if (!statusExists) errors.push({ field: 'statusID', message: 'statusID informado não existe.'});
+    }
+    if (updateUserDto.roleID) {
+      const roleExists = await this.prismaService.role.findUnique({
+        where: { id: updateUserDto.roleID },
+      });
+      if (!roleExists) errors.push({ field: 'roleID', message: 'roleID informado não existe.'});
     }
 
     if (errors.length > 0) {

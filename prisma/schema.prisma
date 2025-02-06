@@ -51,13 +51,22 @@ model Sex{
   users Users[]
 }
 
+model Role {
+  id Int @id @default(autoincrement())
+  typeRole String @unique
+  users Users[]
+}
+
 model Users{
   CPF String @id
   name String
+  password String
   personal_email String? @unique
   corporate_email String? @unique
   matriculation String? @unique
   date_of_birth DateTime? @db.Date
+  roleID Int
+  role Role @relation(fields: [roleID], references: [id])
   sexID Int?
   sex Sex? @relation(fields: [sexID], references: [id])
   secretaryID Int?
