@@ -3,6 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/databases/prisma/prisma.service';
 import { NotFoundError } from 'src/error';
+import * as bcrypt from 'bcrypt'
 
 @Injectable()
 export class UsersService {
@@ -21,9 +22,19 @@ export class UsersService {
           throw new HttpException({ field: 'CPF', message: 'CPF informado já cadatrado.'}, HttpStatus.BAD_REQUEST);
         } 
     }
-      return this.prismaService.users.create({
-        data: createUserDto
-      });
+
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(createUserDto.password, salt)
+
+    const userSave = await this.prismaService.users.create({
+      data: {
+        ...createUserDto,
+        password: hashedPassword
+      }
+    });
+
+      delete userSave.password;
+      return userSave;
   };
 
   findAll() {
@@ -83,7 +94,7 @@ export class UsersService {
               }
             }
           }
-        }
+        }, 
       }
     });
   }
