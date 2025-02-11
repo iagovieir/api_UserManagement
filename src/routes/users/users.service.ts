@@ -12,6 +12,33 @@ export class UsersService {
 
   };
 
+  async validateForeignKeys(dto: Partial<CreateUserDto>) {
+    const foreignKeys = [
+      { key: 'secretaryID', model: 'secretary', message: 'secretaryID informado não existe.' },
+      { key: 'statusID', model: 'status', message: 'statusID informado não existe.' },
+      { key: 'roleID', model: 'role', message: 'roleID informado não existe.' },
+      { key: 'sectorID', model: 'sector', message: 'sectorID informado não existe.' },
+      { key: 'sexID', model: 'sex', message: 'sexID informado não existe.' },
+      { key: 'nomenclatureOfficeID', model: 'nomenclatureOffice', message: 'nomenclatureOfficeID informado não existe.' },
+    ];
+  
+    const errors = (
+      await Promise.all(
+        foreignKeys.map(async ({ key, model, message }) => {
+          const value = dto[key as keyof Partial<CreateUserDto>];
+          if (!value) return null; 
+  
+          const exists = await this.prismaService[model].findUnique({ where: { id: value } });
+          return exists ? null : { field: key, message };
+        })
+      )
+    ).filter(error => error !== null);
+  
+    if (errors.length > 0) {
+      throw new HttpException({ errors }, HttpStatus.BAD_REQUEST);
+    }
+  }
+  
   async create(createUserDto: CreateUserDto) {
 
     if (createUserDto.CPF) {
@@ -20,11 +47,13 @@ export class UsersService {
       });
         if (usersExists){
           throw new HttpException({ field: 'CPF', message: 'CPF informado já cadatrado.'}, HttpStatus.BAD_REQUEST);
-        } 
+        }
     }
 
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(createUserDto.password, salt)
+
+    await this.validateForeignKeys(createUserDto)
 
     const userSave = await this.prismaService.users.create({
       data: {
@@ -45,7 +74,7 @@ export class UsersService {
         corporate_email: true,
         personal_email: true,
         matriculation: true,
-        date_of_birth:true,
+        date_of_birth: true,
         createdAt: true,
         updatedAt: true,
         role:{
@@ -171,31 +200,7 @@ export class UsersService {
 
   async update(CPF: string, updateUserDto: UpdateUserDto) {
 
-    const errors = []
-
-    if (updateUserDto.secretaryID) {
-      const secretaryExists = await this.prismaService.secretary.findUnique({
-        where: { id: updateUserDto.secretaryID },
-      });
-        if (!secretaryExists) errors.push({ field: 'secretaryID', message: 'secretaryID informado não existe.'}); 
-    }
-
-    if (updateUserDto.statusID) {
-      const statusExists = await this.prismaService.status.findUnique({
-        where: { id: updateUserDto.statusID },
-      });
-      if (!statusExists) errors.push({ field: 'statusID', message: 'statusID informado não existe.'});
-    }
-    if (updateUserDto.roleID) {
-      const roleExists = await this.prismaService.role.findUnique({
-        where: { id: updateUserDto.roleID },
-      });
-      if (!roleExists) errors.push({ field: 'roleID', message: 'roleID informado não existe.'});
-    }
-
-    if (errors.length > 0) {
-      throw new HttpException({ errors }, HttpStatus.BAD_REQUEST);
-    }
+    await this.validateForeignKeys(updateUserDto)
 
     try{
       return await this.prismaService.users.update({
@@ -210,9 +215,13 @@ export class UsersService {
 
   async remove(CPF: string) {
     try{
-      return await this.prismaService.users.delete({
+
+      const deleteUser = await this.prismaService.users.delete({
       where:{CPF}
     });
+      delete deleteUser.password;
+      return deleteUser;
+
     }catch(error){
         throw new NotFoundError(`Usário com o CPF ${CPF} não encontratdo`);
 

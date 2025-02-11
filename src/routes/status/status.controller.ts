@@ -6,7 +6,7 @@ import { UpdateStatusDto } from './dto/update-status.dto';
 @Controller('status')
 export class StatusController {
   constructor(private readonly statusService: StatusService) {}
-
+  
   @Post()
   create(@Body() createStatusDto: CreateStatusDto) {
     return this.statusService.create(createStatusDto);
