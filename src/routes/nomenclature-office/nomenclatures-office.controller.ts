@@ -2,7 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { NomenclaturesOfficeService } from './nomenclatures-office.service';
 import { CreateNomenclatureOfficeDto } from './dto/create-nomenclature-office.dto';
 import { UpdateNomenclatureOfficeDto } from './dto/update-nomenclature-office.dto';
-import { ApiBody } from '@nestjs/swagger';
+import { ApiBody} from '@nestjs/swagger';
+
 
 @Controller('nomenclatures-office')
 export class NomenclaturesOfficeController {

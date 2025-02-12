@@ -71,16 +71,39 @@ model Users{
   sex Sex? @relation(fields: [sexID], references: [id])
   secretaryID Int?
   secretary Secretary? @relation(fields: [secretaryID], references: [id])
-  sectorID Int?
+  sectorID   Int?
   sector Sector? @relation(fields: [sectorID], references: [id])
   nomenclatureOfficeID Int?
   NomenclatureOffice NomenclatureOffice? @relation(fields: [nomenclatureOfficeID], references: [id] )
   leaderId   String?
   leader     Users? @relation("UserToLeader",fields: [leaderId], references: [CPF])
-  statusID Int?
+  statusID   Int?
   status Status? @relation(fields: [statusID], references: [id])
+  contracts UserContratc[]
   subordinates Users[] @relation("UserToLeader")
   phone Phone[]
   createdAt DateTime @default(now())
   updatedAt DateTime? @updatedAt
+}
+
+model Contracts {
+  numberContract  String   @id
+  titulo     String
+  nameObjetc String
+  startDate  DateTime
+  endDate    DateTime
+  users      UserContratc[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model UserContratc { // Tabela intermediária
+  userID      String
+  contractID  String
+  assignedAt  DateTime      @default(now()) 
+  
+  user       Users         @relation(fields: [userID], references: [CPF])
+  project    Contracts      @relation(fields: [contractID], references: [numberContract])
+
+  @@id([userID, contractID])
 }

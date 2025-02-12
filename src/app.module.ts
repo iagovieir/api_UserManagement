@@ -10,13 +10,14 @@ import { SectorModule } from './routes/sector/sector.module';
 import { SexModule } from './routes/sex/sex.module';
 import { StatusModule } from './routes/status/status.module';
 import { RoleModule } from './routes/role/role.module';
+import { ContractModule } from './contract/contract/contract.module';
 
 @Module({
   
   imports: [UsersModule, NomenclaturesOfficeModule, 
             TypeJobModule, PhoneModule, 
             SecretaryModule, SectorModule, 
-            SexModule, StatusModule, RoleModule],
+            SexModule, StatusModule, RoleModule, ContractModule],
 
   controllers: [AppController],
   providers: [AppService],
