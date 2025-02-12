@@ -24,7 +24,7 @@ export class UsersController {
     return this.usersService.findOne(CPF);
   }
 
-  @ApiBody({type: CreateUserDto})
+  @ApiBody({type: UpdateUserDto})
   @Patch(':id')
   update(@Param('id') CPF: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(CPF, updateUserDto);

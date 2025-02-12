@@ -18,7 +18,7 @@ export class CreateUserDto {
     @IsString({ message:  `o valor não é válido para o valor esperado em password`})
     password: string;
 
-    @ApiPropertyOptional()
+    @ApiProperty()
     @ApiProperty({ example: "john.personal@example.com", description: "E-mail pessoal do usuário", required: false })
     @IsOptional()
     @IsString({ message:  `o valor não é válido para o valor esperado em personal_email`})
