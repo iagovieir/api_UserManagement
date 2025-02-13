@@ -1,29 +1,19 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateSecretaryDto } from './dto/create-secretary.dto';
 import { UpdateSecretaryDto } from './dto/update-secretary.dto';
 import { PrismaService } from 'src/databases/prisma/prisma.service';
 import { NotFoundError } from 'src/error';
+import { UtilsService } from 'src/utils/utils.service';
 
 @Injectable()
 export class SecretaryService {
 
-  constructor(private prismaService: PrismaService){
-
-  }
-  
+  constructor(private prismaService: PrismaService, private utilsService: UtilsService){}
   
   async create(createSecretaryDto: CreateSecretaryDto) {
 
-    if (createSecretaryDto.name) {
-      const nomenclatureOfficeExists = await this.prismaService.secretary.findUnique({
-        where: { name: createSecretaryDto.name },
-      });
-      if (nomenclatureOfficeExists){
-        throw new HttpException({ field: 'name', message: 'Nome informado já cadatrado.'}, HttpStatus.BAD_REQUEST);
-      }
-    }
-    
-    
+    await this.utilsService.validateUniqueField('secretary', 'name', createSecretaryDto.name, 'Valor informado em name já cadatrado.')
+
     return await this.prismaService.secretary.create({
       data: createSecretaryDto
     });
@@ -39,9 +29,7 @@ export class SecretaryService {
       where: {id}
     });
     }catch(error){
-      if(error.code === 'P2025'){
         throw new NotFoundError(`Secretaria com o ID ${id} não encontratdo`);
-      };
     }
   }
 
@@ -52,9 +40,7 @@ export class SecretaryService {
       data: updateSecretaryDto
     });
     }catch(error){
-      if(error.code === 'P2025'){
         throw new NotFoundError(`Secretaria com o ID ${id} não encontratdo`);
-      };
     }
   }
 
@@ -64,9 +50,7 @@ export class SecretaryService {
       where: {id}
     });
     }catch(error){
-      if(error.code === 'P2025'){
         throw new NotFoundError(`Secretaria com o ID ${id} não encontratdo`);
-      };
     
   }
   }

@@ -3,22 +3,17 @@ import { CreateSexDto } from './dto/create-sex.dto';
 import { UpdateSexDto } from './dto/update-sex.dto';
 import { PrismaService } from 'src/databases/prisma/prisma.service';
 import { NotFoundError } from 'src/error';
+import { UtilsService } from 'src/utils/utils.service';
 
 @Injectable()
 export class SexService {
   
-  constructor(private prismaService: PrismaService){}
+  constructor(private prismaService: PrismaService, private utilsService: UtilsService){}
   
   async create(createSexDto: CreateSexDto) {
 
-    if (createSexDto.name) {
-      const sexExists = await this.prismaService.sex.findUnique({
-        where: { name: createSexDto.name },
-      });
-      if (sexExists){
-        throw new HttpException({ field: 'name', message: 'Nome informado já cadatrado.'}, HttpStatus.BAD_REQUEST);
-      }
-    }
+    await this.utilsService.validateUniqueField('sex', 'name', createSexDto.name, 'Valor informado em name já cadatrado.')
+
     return await this.prismaService.sex.create({
       data: createSexDto
     });
@@ -42,9 +37,7 @@ export class SexService {
       where: {id}
     });
     }catch(error){
-      if(error.code === 'P2025'){
         throw new NotFoundError(`Sexo com o ID ${id} não encontratdo`);
-      };
   }
 }
 
@@ -55,9 +48,7 @@ export class SexService {
       data: updateSexDto
     });
     }catch(error){
-      if(error.code === 'P2025'){
         throw new NotFoundError(`Sexo com o ID ${id} não encontratdo`);
-      };
   }
 }
 
@@ -67,9 +58,7 @@ export class SexService {
       where: {id}
     });
     }catch(error){
-      if(error.code === 'P2025'){
         throw new NotFoundError(`Sexo com o ID ${id} não encontratdo`);
-      };
   } 
 }
 }

@@ -76,9 +76,7 @@ export class NomenclaturesOfficeService {
         }
     });
     }catch(error){
-      if(error.code === 'P2025'){
         throw new NotFoundError(`Cargo com o ID ${id} não encontratdo`);
-      };
     };
       
   }
@@ -90,9 +88,7 @@ export class NomenclaturesOfficeService {
       data: UpdateNomenclatureOfficeDto
     });
     }catch(error){
-      if(error.code === 'P2025'){
         throw new NotFoundError(`Cargo com o ID ${id} não encontratdo`);
-      };
     };
    
   }
@@ -103,9 +99,7 @@ export class NomenclaturesOfficeService {
         where: {id}
       });
     }catch(error){
-      if(error.code === 'P2025'){
         throw new NotFoundError(`Cargo com o ID ${id} não encontratdo`);
-      };
     };
   };
 }

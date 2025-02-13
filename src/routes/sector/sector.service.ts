@@ -1,24 +1,18 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateSectorDto } from './dto/create-sector.dto';
 import { UpdateSectorDto } from './dto/update-sector.dto';
 import { PrismaService } from 'src/databases/prisma/prisma.service';
 import { NotFoundError } from 'src/error';
+import { UtilsService } from 'src/utils/utils.service';
 
 @Injectable()
 export class SectorService {
 
-  constructor(private prismaService: PrismaService){}
+  constructor(private prismaService: PrismaService, private utilsService: UtilsService){}
 
   async create(createSectorDto: CreateSectorDto) {
 
-    if (createSectorDto.name) {
-          const sectorExists = await this.prismaService.sector.findUnique({
-            where: { name: createSectorDto.name },
-          });
-          if (sectorExists){
-            throw new HttpException({ field: 'name', message: 'Nome informado já cadatrado.'}, HttpStatus.BAD_REQUEST);
-          }
-        }
+    await this.utilsService.validateUniqueField('sector', 'name', createSectorDto.name, 'Valor informado em name já cadatrado.')
 
     return await this.prismaService.sector.create({
       data: createSectorDto
@@ -35,9 +29,7 @@ export class SectorService {
       where: {id}
     });
     }catch(error){
-      if(error.code === 'P2025'){
         throw new NotFoundError(`Setor com o ID ${id} não encontratdo`);
-      }; 
   }   
 }
 
@@ -48,9 +40,7 @@ export class SectorService {
       data: updateSectorDto
     });
     }catch(error){
-      if(error.code === 'P2025'){
         throw new NotFoundError(`Setor com o ID ${id} não encontratdo`);
-      };
   }  
 }
 
@@ -60,9 +50,7 @@ export class SectorService {
       where: {id}
     });
     }catch(error){
-      if(error.code === 'P2025'){
         throw new NotFoundError(`Setor com o ID ${id} não encontratdo`);
-      };
   }
 }
 }

@@ -58,9 +58,7 @@ export class PhoneService {
       }
     });
   }catch(error){
-    if(error.code === 'P2025'){
       throw new NotFoundError(`Telefone com o ID ${id} não encontratdo`);
-    };
   }
 }  
   
@@ -73,10 +71,7 @@ export class PhoneService {
       data: updatePhoneDto
     });
     }catch(error){
-      if(error.code === 'P2025'){
         throw new NotFoundError(`Telefone com o ID ${id} não encontratdo`);
-      };
-    
   }
   }
   async remove(id: number) {
@@ -85,10 +80,7 @@ export class PhoneService {
       where: {id}
     });
     }catch(error){
-      if(error.code === 'P2025'){
         throw new NotFoundError(`Telefone com o ID ${id} não encontratdo`);
-      };
-    
   }
 }
 }

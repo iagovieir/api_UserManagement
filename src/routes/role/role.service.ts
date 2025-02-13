@@ -2,13 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { PrismaService } from 'src/databases/prisma/prisma.service';
+import { UtilsService } from 'src/utils/utils.service';
+import { NotFoundError } from 'src/error';
 
 @Injectable()
 export class RoleService {
 
-  constructor(private prismaService: PrismaService){}
+  constructor(private prismaService: PrismaService, private utilsService: UtilsService){}
 
-  create(createRoleDto: CreateRoleDto) {
+  async create(createRoleDto: CreateRoleDto) {
+
+    await this.utilsService.validateUniqueField('role', 'TypeRole', createRoleDto.typeRole, 'Valor informado em typeRole já cadastrado.')
+
     return this.prismaService.role.create({
       data: createRoleDto
     });
@@ -18,15 +23,37 @@ export class RoleService {
     return this.prismaService.role.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} role`;
+  async findOne(id: number) {
+
+    try{
+      return this.prismaService.role.findFirstOrThrow({
+        where: {id}
+      });
+    }catch(error){
+      throw new NotFoundError(`Role com id ${id} não encontratdo`);
+  };
+   
   }
 
-  update(id: number, updateRoleDto: UpdateRoleDto) {
-    return `This action updates a #${id} role`;
+  async update(id: number, updateRoleDto: UpdateRoleDto) {
+    try{
+      return this.prismaService.role.update({
+        where: {id},
+        data: updateRoleDto
+      })
+    }catch(error){
+      throw new NotFoundError(`Role com id ${id} não encontratdo`);
+  };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} role`;
+  async remove(id: number) {
+    try{
+      return this.prismaService.role.delete({
+        where: {id}
+      });
+    }catch(error){
+      throw new NotFoundError(`Role com id ${id} não encontratdo`);
+  };
+    
   }
 }

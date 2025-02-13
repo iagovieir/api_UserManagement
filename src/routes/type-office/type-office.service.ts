@@ -1,27 +1,21 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateTypeOfficeDto } from './dto/create-type-office.dto';
 import { UpdateTypeOfficeDto } from './dto/update-type-office.dto';
 import { PrismaService } from 'src/databases/prisma/prisma.service';
 import { NotFoundError } from 'src/error';
+import { UtilsService } from 'src/utils/utils.service';
 
 @Injectable()
 export class TypeOfficeService {
 
-  constructor(private prismaService: PrismaService){}
+  constructor(private prismaService: PrismaService, private utilsService: UtilsService){}
 
-  async create(CreateTypeOfficeDto: CreateTypeOfficeDto) {
+  async create(createTypeOfficeDto: CreateTypeOfficeDto) {
 
-    if (CreateTypeOfficeDto.name) {
-      const typeOfficeExists = await this.prismaService.typeOffice.findUnique({
-        where: { name: CreateTypeOfficeDto.name },
-      });
-      if (typeOfficeExists){
-        throw new HttpException({ field: 'name', message: 'Nome informado já cadatrado.'}, HttpStatus.BAD_REQUEST);
-      } 
-    }
+    await this.utilsService.validateUniqueField('typeOffice', 'name', createTypeOfficeDto.name, 'Valor informado em name já cadastrado' )
 
     return await this.prismaService.typeOffice.create({
-      data: CreateTypeOfficeDto
+      data: createTypeOfficeDto
     });
   }
 
@@ -57,9 +51,7 @@ export class TypeOfficeService {
         data: updateTypeOfficeDto
       });
     }catch(error){
-      if(error.code === 'P2025'){
         throw new NotFoundError(`Tipo de Cargo com o id ${id} não encontratdo`);
-      };
     };
   }
 
@@ -69,9 +61,7 @@ export class TypeOfficeService {
         where: {id}
       });
     }catch(error){
-      if(error.code === 'P2025'){
         throw new NotFoundError(`Tipo de Cargo com o id ${id} não encontratdo`);
-      };
     };
   }
 }

@@ -10,14 +10,16 @@ import { SectorModule } from './routes/sector/sector.module';
 import { SexModule } from './routes/sex/sex.module';
 import { StatusModule } from './routes/status/status.module';
 import { RoleModule } from './routes/role/role.module';
-import { ContractModule } from './contract/contract/contract.module';
+import { ContractModule } from './contract/contract.module';
+import { UtilsService } from './utils/utils.service';
+import { UtilsModule } from './utils/utils.module';
 
 @Module({
   
   imports: [UsersModule, NomenclaturesOfficeModule, 
             TypeJobModule, PhoneModule, 
             SecretaryModule, SectorModule, 
-            SexModule, StatusModule, RoleModule, ContractModule],
+            SexModule, StatusModule, RoleModule, ContractModule, UtilsModule],
 
   controllers: [AppController],
   providers: [AppService],

@@ -1,63 +1,39 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/databases/prisma/prisma.service';
 import { NotFoundError } from 'src/error';
 import * as bcrypt from 'bcrypt';
+import { UtilsService } from 'src/utils/utils.service';
 
 @Injectable()
 export class UsersService {
 
-  constructor(private prismaService: PrismaService){
+  constructor(private prismaService: PrismaService, private utilsService: UtilsService){
 
   };
-
-  async validateForeignKeys(dto: Partial<CreateUserDto>) {
-    const foreignKeys = [
-      { key: 'secretaryID', model: 'secretary', message: 'secretaryID informado não existe.' },
-      { key: 'statusID', model: 'status', message: 'statusID informado não existe.' },
-      { key: 'roleID', model: 'role', message: 'roleID informado não existe.' },
-      { key: 'sectorID', model: 'sector', message: 'sectorID informado não existe.' },
-      { key: 'sexID', model: 'sex', message: 'sexID informado não existe.' },
-      { key: 'nomenclatureOfficeID', model: 'nomenclatureOffice', message: 'nomenclatureOfficeID informado não existe.' },
-    ];
-  
-    const errors = (
-      await Promise.all(
-        foreignKeys.map(async ({ key, model, message }) => {
-          const value = dto[key as keyof Partial<CreateUserDto>];
-          if (!value) return null; 
-  
-          const exists = await this.prismaService[model].findUnique({ where: { id: value } });
-          return exists ? null : { field: key, message };
-        })
-      )
-    ).filter(error => error !== null);
-  
-    if (errors.length > 0) {
-      throw new HttpException({ errors }, HttpStatus.BAD_REQUEST);
-    }
-  }
   
   async create(createUserDto: CreateUserDto) {
 
-    if (createUserDto.CPF) {
-      const usersExists = await this.prismaService.users.findUnique({
-        where: { CPF: createUserDto.CPF },
-      });
-        if (usersExists){
-          throw new HttpException({ field: 'CPF', message: 'CPF informado já cadatrado.'}, HttpStatus.BAD_REQUEST);
-        }
-    }
+    await this.utilsService.validateUniqueField(
+     'users', 'CPF', createUserDto.CPF, 'Valor informado em CPF já cadastrado'
+    );
+    await this.utilsService.validateUniqueField(
+      'users', 'corporate_email', createUserDto.corporate_email, 'Valor informado em e-mail corporativo já cadastrado'
+     );
+     await this.utilsService.validateUniqueField(
+      'users', 'personal_email', createUserDto.personal_email, 'Valor informado em e-mail pessoal já cadastrado'
+     );
 
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(createUserDto.password, salt)
 
-    await this.validateForeignKeys(createUserDto)
+    await this.utilsService.validateForeignKeys(createUserDto)
 
     const userSave = await this.prismaService.users.create({
       data: {
         ...createUserDto,
+        date_of_birth: new Date(createUserDto.date_of_birth),
         password: hashedPassword
       }
     });
@@ -200,7 +176,7 @@ export class UsersService {
 
   async update(CPF: string, updateUserDto: UpdateUserDto) {
 
-    await this.validateForeignKeys(updateUserDto)
+    await this.utilsService.validateForeignKeys(updateUserDto)
 
     try{
       return await this.prismaService.users.update({

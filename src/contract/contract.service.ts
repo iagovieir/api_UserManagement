@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateContractDto } from './dto/create-contract.dto';
 import { UpdateContractDto } from './dto/update-contract.dto';
 import { PrismaService } from 'src/databases/prisma/prisma.service';
@@ -8,7 +8,16 @@ export class ContractService {
 
     constructor(private prismaService : PrismaService){}
 
-  create(createContractDto: CreateContractDto) {
+  async create(createContractDto: CreateContractDto) {
+
+    if (createContractDto.numberContract) {
+          const secretaryExists = await this.prismaService.contracts.findUnique({
+            where: { numberContract: createContractDto.numberContract },
+          });
+          if (secretaryExists){
+            throw new HttpException({ field: 'numberContract', message: 'numberContract informado já cadatrado.'}, HttpStatus.BAD_REQUEST);
+          }
+        }
 
     return this.prismaService.contracts.create({
       data: {...createContractDto,
@@ -21,6 +30,7 @@ export class ContractService {
   findAll() {
     return this.prismaService.contracts.findMany({
       select:{
+        numberContract: true,
         titulo: true,
         nameObjetc: true,
         startDate: true,
