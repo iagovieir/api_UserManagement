@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsDate, IsInt, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsDate, IsInt, IsISO8601, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class CreateUserDto {
     
@@ -36,7 +36,7 @@ export class CreateUserDto {
 
     @ApiProperty({ example: "10-08-2000", description: "Data de nascimento do usuário", required: false, type: String })
     @IsOptional()
-    @IsDate({ message: `o valor não é válido para o valor esperado em date_of_birth`})
+    @IsISO8601({})
     date_of_birth?: Date;
 
     @ApiProperty({ example: 1, description: "ID do cargo do usuário" })

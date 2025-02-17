@@ -15,7 +15,7 @@ export class UpdateContractDto extends PartialType(CreateContractDto) {
         @ApiProperty({ example: "2025-05-29", description: "data inicio da vigência" })
         startDate:  Date;
     
-        @ApiProperty({ example: "ASSESSOR ADMINISTRATIVO", description: "Data final da vigência" })
+        @ApiProperty({ example: "2025-05-29", description: "Data final da vigência" })
         endDate:   Date;
 
 }

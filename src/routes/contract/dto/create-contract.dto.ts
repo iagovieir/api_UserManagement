@@ -24,7 +24,7 @@ export class CreateContractDto {
     startDate:  Date;
 
     @ApiProperty({ example: "2025-02-11T00:00:00", description: "Data final da vigência" })
-    @IsISO8601()
+    @IsISO8601({})
     @IsNotEmpty({ message: `o valor não pode ser vázio`})
     endDate:   Date;
 

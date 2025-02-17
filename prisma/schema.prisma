@@ -103,7 +103,7 @@ model UserContratc { // Tabela intermediária
   assignedAt  DateTime      @default(now()) 
   
   user       Users         @relation(fields: [userID], references: [CPF])
-  project    Contracts      @relation(fields: [contractID], references: [numberContract])
+  contracts    Contracts      @relation(fields: [contractID], references: [numberContract])
 
   @@id([userID, contractID])
 }

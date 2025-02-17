@@ -19,19 +19,19 @@ export class ContractController {
     return this.contractService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') numberContract: string) {
+  @Get(':numberContract')
+  findOne(@Param('numberContract') numberContract: string) {
     return this.contractService.findOne(numberContract);
   }
 
   @ApiBody({type: UpdateContractDto})
-  @Patch(':id')
-  update(@Param('id') numberContract: string, @Body() updateContractDto: UpdateContractDto) {
+  @Patch(':numberContract')
+  update(@Param('numberContract') numberContract: string, @Body() updateContractDto: UpdateContractDto) {
     return this.contractService.update(numberContract, updateContractDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') numberContract: string) {
+  @Delete(':numberContract')
+  remove(@Param('numberContract') numberContract: string) {
     return this.contractService.remove(numberContract);
   }
 }

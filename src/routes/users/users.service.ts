@@ -20,20 +20,28 @@ export class UsersService {
     );
     await this.utilsService.validateUniqueField(
       'users', 'corporate_email', createUserDto.corporate_email, 'Valor informado em e-mail corporativo já cadastrado'
-     );
-     await this.utilsService.validateUniqueField(
+    );
+    await this.utilsService.validateUniqueField(
       'users', 'personal_email', createUserDto.personal_email, 'Valor informado em e-mail pessoal já cadastrado'
-     );
+    );
+
+    await this.utilsService.validateForeignKeys<CreateUserDto>(createUserDto, [
+      { key: 'secretaryID', model: 'secretary', referencialField: 'id', message: 'secretaryID informado não existe.' },
+      { key: 'statusID', model: 'status', referencialField: 'id', message: 'statusID informado não existe.' },
+      { key: 'roleID', model: 'role', referencialField: 'id', message: 'roleID informado não existe.' },
+      { key: 'sectorID', model: 'sector', referencialField: 'id', message: 'sectorID informado não existe.' },
+      { key: 'sexID', model: 'sex', referencialField: 'id', message: 'sexID informado não existe.' },
+      { key: 'nomenclatureOfficeID', referencialField: 'id', model: 'nomenclatureOffice', message: 'nomenclatureOfficeID informado não existe.' },
+    ]);
+    
 
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(createUserDto.password, salt)
 
-    await this.utilsService.validateForeignKeys(createUserDto)
-
     const userSave = await this.prismaService.users.create({
       data: {
         ...createUserDto,
-        date_of_birth: new Date(createUserDto.date_of_birth),
+        date_of_birth: createUserDto.date_of_birth ? new Date(createUserDto.date_of_birth) : undefined,
         password: hashedPassword
       }
     });
@@ -50,7 +58,7 @@ export class UsersService {
         corporate_email: true,
         personal_email: true,
         matriculation: true,
-        date_of_birth: true,
+        date_of_birth:true,
         createdAt: true,
         updatedAt: true,
         role:{
@@ -73,23 +81,6 @@ export class UsersService {
             name: true
           }
         },
-        subordinates: {
-          select: {
-            name: true,
-            CPF: true
-          }
-        },
-        leader:{
-          select: {
-            name: true,
-            CPF: true
-          }
-        },
-        phone: {
-          select: {
-            phone: true
-          }
-        },
         NomenclatureOffice: {
           select:{
             name: true,
@@ -99,7 +90,34 @@ export class UsersService {
               }
             }
           }
-        }, 
+        },
+        leader:{
+          select: {
+            name: true,
+            CPF: true
+          }
+        },
+        subordinates: {
+          select: {
+            name: true,
+            CPF: true
+          }
+        },
+        contracts:{
+          select:{
+             contracts:{
+              select:{
+                titulo: true,
+                numberContract: true
+              }
+             }
+          }
+        },
+        phone: {
+          select: {
+            phone: true
+          }
+        }
       }
     });
   }
@@ -139,23 +157,6 @@ export class UsersService {
               name: true
             }
           },
-          subordinates: {
-            select: {
-              name: true,
-              CPF: true
-            }
-          },
-          leader:{
-            select: {
-              name: true,
-              CPF: true
-            }
-          },
-          phone: {
-            select: {
-              phone: true
-            }
-          },
           NomenclatureOffice: {
             select:{
               name: true,
@@ -164,6 +165,33 @@ export class UsersService {
                   name: true
                 }
               }
+            }
+          },
+          leader:{
+            select: {
+              name: true,
+              CPF: true
+            }
+          },
+          subordinates: {
+            select: {
+              name: true,
+              CPF: true
+            }
+          },
+          contracts:{
+            select:{
+               contracts:{
+                select:{
+                  titulo: true,
+                  numberContract: true
+                }
+               }
+            }
+          },
+          phone: {
+            select: {
+              phone: true
             }
           }
         }
@@ -176,7 +204,15 @@ export class UsersService {
 
   async update(CPF: string, updateUserDto: UpdateUserDto) {
 
-    await this.utilsService.validateForeignKeys(updateUserDto)
+    await this.utilsService.validateForeignKeys<UpdateUserDto>(updateUserDto, [
+      { key: 'secretaryID', model: 'secretary', referencialField: 'id', message: 'secretaryID informado não existe.' },
+      { key: 'statusID', model: 'status', referencialField: 'id', message: 'statusID informado não existe.' },
+      { key: 'roleID', model: 'role', referencialField: 'id', message: 'roleID informado não existe.' },
+      { key: 'sectorID', model: 'sector', referencialField: 'id', message: 'sectorID informado não existe.' },
+      { key: 'sexID', model: 'sex', referencialField: 'id', message: 'sexID informado não existe.' },
+      { key: 'nomenclatureOfficeID', referencialField: 'id', model: 'nomenclatureOffice', message: 'nomenclatureOfficeID informado não existe.' },
+    ]);
+    
 
     try{
       return await this.prismaService.users.update({

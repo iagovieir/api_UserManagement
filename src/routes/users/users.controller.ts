@@ -19,19 +19,19 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') CPF: string) {
+  @Get(':CPF')
+  findOne(@Param('CPF') CPF: string) {
     return this.usersService.findOne(CPF);
   }
 
   @ApiBody({type: UpdateUserDto})
-  @Patch(':id')
-  update(@Param('id') CPF: string, @Body() updateUserDto: UpdateUserDto) {
+  @Patch(':CPF')
+  update(@Param('CPF') CPF: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(CPF, updateUserDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') CPF: string) {
+  @Delete(':CPF')
+  remove(@Param('CPF') CPF: string) {
     return this.usersService.remove(CPF);
   }
 }

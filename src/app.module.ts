@@ -10,18 +10,46 @@ import { SectorModule } from './routes/sector/sector.module';
 import { SexModule } from './routes/sex/sex.module';
 import { StatusModule } from './routes/status/status.module';
 import { RoleModule } from './routes/role/role.module';
-import { ContractModule } from './contract/contract.module';
-import { UtilsService } from './utils/utils.service';
 import { UtilsModule } from './utils/utils.module';
+import { ContractModule } from './routes/contract/contract.module';
+import { UserToContractModule } from './routes-relations/user-to-contract/user-to-contract.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { join } from 'path';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { MailService } from './utils/mail/mail.service';
+import { ScheduleModule } from '@nestjs/schedule';
+import { NotificationService } from './utils/notification/notification.service';
 
 @Module({
   
-  imports: [UsersModule, NomenclaturesOfficeModule, 
+  imports: [MailerModule.forRoot({
+    transport: {
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false, 
+      auth: {
+        user: 'iago.unijp@gmail.com',
+        pass: 'rvnb ogmg zayn fpbw',
+      },
+    },
+    defaults: {
+      from: '"Notificação de Contratos" <noreply@seusistema.com>',
+    },
+    template: {
+      dir: './src/templates',
+      adapter: new HandlebarsAdapter(),
+      options: {
+        strict: true,
+      },
+    },
+  }), ScheduleModule.forRoot(), UsersModule, NomenclaturesOfficeModule, 
             TypeJobModule, PhoneModule, 
             SecretaryModule, SectorModule, 
-            SexModule, StatusModule, RoleModule, ContractModule, UtilsModule],
+            SexModule, StatusModule, RoleModule, 
+            ContractModule, UtilsModule, UserToContractModule],
 
   controllers: [AppController],
-  providers: [AppService],
-})
+  providers: [AppService, MailService, NotificationService],
+  exports: [MailService, NotificationService]
+  })
 export class AppModule {}

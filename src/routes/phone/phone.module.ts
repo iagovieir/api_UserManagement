@@ -6,8 +6,8 @@ import { UtilsModule } from 'src/utils/utils.module';
 
 
 @Module({
+  imports: [PrismaModule, UtilsModule],
   controllers: [PhoneController],
   providers: [PhoneService],
-  imports: [PrismaModule, UtilsModule]
 })
 export class PhoneModule {}
