@@ -1,12 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiBody } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
+import { LoginDto } from './dto/login.dto';
+import { AuthService } from 'src/auth/auth.service';
+import { Public } from 'src/auth/public.decorator';
+import { Roles } from 'src/auth/role.decorator';
+import { UserRole } from 'src/routes-relations/roles-to-user/dto/create-roles-to-user.dto';
 
+@ApiBearerAuth()
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+
+  constructor(private readonly usersService: UsersService, private readonly authService: AuthService) {}
   
   @Post()
   @ApiBody({type: CreateUserDto})
@@ -15,6 +22,7 @@ export class UsersController {
   }
 
   @Get()
+  @Roles(UserRole.ADMIN)
   findAll() {
     return this.usersService.findAll();
   }
@@ -33,5 +41,12 @@ export class UsersController {
   @Delete(':CPF')
   remove(@Param('CPF') CPF: string) {
     return this.usersService.remove(CPF);
+  }
+
+  @Public()
+  @ApiBody({type: LoginDto})
+  @Post('login')
+  async login(@Body() body) {
+    return this.authService.login(body.CPF, body.password);
   }
 }

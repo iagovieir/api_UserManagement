@@ -19,12 +19,6 @@ export class UserToContractController {
     return this.userToContractService.findAll();
   }
 
-  @ApiBody({type:UpdateUserToContractDto})
-  @Patch(':userID/:contractID')
-  update(@Param('userID') userID: string, @Param('contractID')contractID: string, @Body() updateUserToContractDto: UpdateUserToContractDto) {
-    return this.userToContractService.update(userID, contractID, updateUserToContractDto);
-  }
-
   @Delete(':userID/:contractID')
   remove(@Param('userID') userID: string, @Param('contractID')contractID: string) {
     return this.userToContractService.remove(userID, contractID);

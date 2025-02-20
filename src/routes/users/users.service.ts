@@ -28,7 +28,6 @@ export class UsersService {
     await this.utilsService.validateForeignKeys<CreateUserDto>(createUserDto, [
       { key: 'secretaryID', model: 'secretary', referencialField: 'id', message: 'secretaryID informado não existe.' },
       { key: 'statusID', model: 'status', referencialField: 'id', message: 'statusID informado não existe.' },
-      { key: 'roleID', model: 'role', referencialField: 'id', message: 'roleID informado não existe.' },
       { key: 'sectorID', model: 'sector', referencialField: 'id', message: 'sectorID informado não existe.' },
       { key: 'sexID', model: 'sex', referencialField: 'id', message: 'sexID informado não existe.' },
       { key: 'nomenclatureOfficeID', referencialField: 'id', model: 'nomenclatureOffice', message: 'nomenclatureOfficeID informado não existe.' },
@@ -61,9 +60,9 @@ export class UsersService {
         date_of_birth:true,
         createdAt: true,
         updatedAt: true,
-        role:{
+        role: {
           select:{
-            typeRole: true,
+            role: true
           }
         },
         sector: {
@@ -137,11 +136,7 @@ export class UsersService {
           date_of_birth:true,
           createdAt: true,
           updatedAt: true,
-          role:{
-            select:{
-              typeRole: true,
-            }
-          },
+          role: true,
           sector: {
             select: {
               name: true
@@ -207,7 +202,6 @@ export class UsersService {
     await this.utilsService.validateForeignKeys<UpdateUserDto>(updateUserDto, [
       { key: 'secretaryID', model: 'secretary', referencialField: 'id', message: 'secretaryID informado não existe.' },
       { key: 'statusID', model: 'status', referencialField: 'id', message: 'statusID informado não existe.' },
-      { key: 'roleID', model: 'role', referencialField: 'id', message: 'roleID informado não existe.' },
       { key: 'sectorID', model: 'sector', referencialField: 'id', message: 'sectorID informado não existe.' },
       { key: 'sexID', model: 'sex', referencialField: 'id', message: 'sexID informado não existe.' },
       { key: 'nomenclatureOfficeID', referencialField: 'id', model: 'nomenclatureOffice', message: 'nomenclatureOfficeID informado não existe.' },

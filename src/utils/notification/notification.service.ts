@@ -5,15 +5,15 @@ import { ContractService } from 'src/routes/contract/contract.service';
 
 @Injectable()
 export class NotificationService {
-  private readonly logger = new Logger(NotificationService.name);
 
   constructor(
     private contractsService: ContractService,
     private mailService: MailService,
   ) {}
 
-  @Cron('0 0 8 * * *')
+  @Cron('0 01 10 * * *')
   async checkExpiringContracts() {
+    
     console.log('🔍 Verificando contratos vencendo em 60, 45, 30 e 15 dias...');
     
     const contracts = await this.contractsService.findExpiringContracts();

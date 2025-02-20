@@ -25,9 +25,6 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
         @ApiPropertyOptional({ example: "10-08-2000", description: "Data de nascimento do usuário", required: false, type: String })
         date_of_birth?: Date;
     
-        @ApiPropertyOptional({ example: 1, description: "ID do cargo do usuário" })
-        roleID: number;
-    
         @ApiPropertyOptional({ example: 3, description: "ID da secretaria do usuário", required: false })
         sexID?: number;
     

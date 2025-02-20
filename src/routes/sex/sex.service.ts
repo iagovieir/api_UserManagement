@@ -34,7 +34,14 @@ export class SexService {
   async findOne(id: number) {
     try{
       return await this.prismaService.sex.findUniqueOrThrow({
-      where: {id}
+      where: {id},
+      include:{
+        users: {
+           select:{
+            name: true
+           }
+        }
+      }
     });
     }catch(error){
         throw new NotFoundError(`Sexo com o ID ${id} não encontratdo`);

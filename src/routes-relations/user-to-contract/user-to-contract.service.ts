@@ -26,24 +26,6 @@ export class UserToContractService {
     return this.prismaService.userContratc.findMany();
   }
 
-  async update(userID: string, contractID: string, updateUserToContractDto: UpdateUserToContractDto) {
-    try{
-
-      await this.utilsService.validateForeignKeys<UpdateUserToContractDto>(updateUserToContractDto, [
-        { key: 'userID', model: 'users', referencialField: 'CPF', message: 'O CPF informado não existe.' },
-        { key: 'contractID', model: 'contracts', referencialField: 'numberContract', message: 'O número de contrato informado não existe.' },
-      ]);
-
-      return await this.prismaService.userContratc.update({
-        where: {userID_contractID: {userID, contractID}},
-        data: updateUserToContractDto
-      });
-    }catch{
-      throw new NotFoundError(`combinção entre as chaves ${userID} e ${contractID} informadas, não tem relacionamento`)
-    }
-    
-  }
-
   async remove(userID: string, contractID: string) {
     try{
       return await this.prismaService.userContratc.delete({

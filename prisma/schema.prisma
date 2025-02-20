@@ -51,41 +51,6 @@ model Sex{
   users Users[]
 }
 
-model Role {
-  id Int @id @default(autoincrement())
-  typeRole String @unique
-  users Users[]
-}
-
-model Users{
-  CPF String @id
-  name String
-  password String
-  personal_email String? @unique
-  corporate_email String? @unique
-  matriculation String? @unique
-  date_of_birth DateTime? @db.Date
-  roleID Int
-  role Role @relation(fields: [roleID], references: [id])
-  sexID Int?
-  sex Sex? @relation(fields: [sexID], references: [id])
-  secretaryID Int?
-  secretary Secretary? @relation(fields: [secretaryID], references: [id])
-  sectorID   Int?
-  sector Sector? @relation(fields: [sectorID], references: [id])
-  nomenclatureOfficeID Int?
-  NomenclatureOffice NomenclatureOffice? @relation(fields: [nomenclatureOfficeID], references: [id] )
-  leaderId   String?
-  leader     Users? @relation("UserToLeader",fields: [leaderId], references: [CPF])
-  statusID   Int?
-  status Status? @relation(fields: [statusID], references: [id])
-  contracts UserContratc[]
-  subordinates Users[] @relation("UserToLeader")
-  phone Phone[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime? @updatedAt
-}
-
 model Contracts {
   numberContract  String   @id
   titulo     String
@@ -106,4 +71,46 @@ model UserContratc { // Tabela intermediária
   contracts    Contracts      @relation(fields: [contractID], references: [numberContract])
 
   @@id([userID, contractID])
+}
+
+enum UserRole {
+  ADMIN
+  USER
+  MODERATOR
+  VIEWER
+}
+
+model UserRoleOnUsers {
+  id      Int   @id @default(autoincrement())
+  user    Users    @relation(fields: [userId], references: [CPF], onDelete: Cascade)
+  userId  String
+  role    UserRole
+}
+
+model Users{
+  CPF String @id
+  name String
+  password String
+  personal_email String? @unique
+  corporate_email String? @unique
+  matriculation String? @unique
+  date_of_birth DateTime? @db.Date
+  role UserRoleOnUsers[]
+  sexID Int?
+  sex Sex? @relation(fields: [sexID], references: [id])
+  secretaryID Int?
+  secretary Secretary? @relation(fields: [secretaryID], references: [id])
+  sectorID   Int?
+  sector Sector? @relation(fields: [sectorID], references: [id])
+  nomenclatureOfficeID Int?
+  NomenclatureOffice NomenclatureOffice? @relation(fields: [nomenclatureOfficeID], references: [id] )
+  leaderId   String?
+  leader     Users? @relation("UserToLeader",fields: [leaderId], references: [CPF])
+  statusID   Int?
+  status Status? @relation(fields: [statusID], references: [id])
+  contracts UserContratc[]
+  subordinates Users[] @relation("UserToLeader")
+  phone Phone[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime? @updatedAt
 }

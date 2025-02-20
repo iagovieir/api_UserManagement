@@ -9,16 +9,19 @@ import { SecretaryModule } from './routes/secretary/secretary.module';
 import { SectorModule } from './routes/sector/sector.module';
 import { SexModule } from './routes/sex/sex.module';
 import { StatusModule } from './routes/status/status.module';
-import { RoleModule } from './routes/role/role.module';
 import { UtilsModule } from './utils/utils.module';
 import { ContractModule } from './routes/contract/contract.module';
 import { UserToContractModule } from './routes-relations/user-to-contract/user-to-contract.module';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { join } from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { MailService } from './utils/mail/mail.service';
 import { ScheduleModule } from '@nestjs/schedule';
 import { NotificationService } from './utils/notification/notification.service';
+import { AuthModule } from './auth/auth.module';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { RolesToUserModule } from './routes-relations/roles-to-user/roles-to-user.module';
+import { RolesGuard } from './auth/roles.guard';
 
 @Module({
   
@@ -45,11 +48,12 @@ import { NotificationService } from './utils/notification/notification.service';
   }), ScheduleModule.forRoot(), UsersModule, NomenclaturesOfficeModule, 
             TypeJobModule, PhoneModule, 
             SecretaryModule, SectorModule, 
-            SexModule, StatusModule, RoleModule, 
-            ContractModule, UtilsModule, UserToContractModule],
+            SexModule, StatusModule, 
+            ContractModule, UtilsModule, UserToContractModule, AuthModule, RolesToUserModule],
 
   controllers: [AppController],
-  providers: [AppService, MailService, NotificationService],
+  providers: [AppService, MailService, NotificationService, {provide: APP_GUARD, useClass: JwtAuthGuard}, {
+    provide: APP_GUARD, useClass: RolesGuard}],
   exports: [MailService, NotificationService]
   })
 export class AppModule {}
